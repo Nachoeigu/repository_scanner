@@ -1,11 +1,19 @@
 import os
 from config import *
 import logging
+import logging
 
+# Define a custom log formatter that includes only the message
+class MessageOnlyFormatter(logging.Formatter):
+    def format(self, record):
+        return record.getMessage()
+
+# Configure the logging module with the custom formatter
 logging.basicConfig(
-    level=logging.INFO,  # Set the logging level to INFO (or your desired level)
+    level=logging.INFO,  # Set the desired logging level
+    format='%(message)s',  # Use the custom formatter to show only the message
     handlers=[
-        logging.FileHandler('logfile.txt'),  # Specify the log file name
+        logging.FileHandler('logfile.txt', mode = 'w'),  # Specify the log file name
         logging.StreamHandler()  # Add a stream handler to print log messages to the console
     ]
 )
