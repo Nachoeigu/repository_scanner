@@ -86,7 +86,7 @@ if __name__ == "__main__":
     print_directory_structure(target_directory, first_approach=True)
     logging.info("Did you understand perfectly the structure of the project I provided to you above?")    
     
-    logging.info('-----------------------------------------------------------------------------')
+    logging.info('---SPLIT_LINE_THAT_WE_USE_LETTER_FOR_ETL_PROCCESS----')
 
     logging.info("IN THE FOLLOWING MESSAGES, I WILL SHARE WITH YOU THE CONTENT OF EACH FILE:")
     print_directory_structure_and_file_contents(target_directory, 
