@@ -1,7 +1,7 @@
 import os
 from config import *
 import logging
-import logging
+import re
 
 # Define a custom log formatter that includes only the message
 class MessageOnlyFormatter(logging.Formatter):
@@ -19,12 +19,23 @@ logging.basicConfig(
 )
 
 
-
 def printing_files(root, files, ignore_files):
     for file in files:
 
         if file.lower() in [item.lower() for item in ignore_files]:
             continue
+        condition_regex = 0
+        for regex in FILES_TO_IGNORE_BASED_ON_REGEX:
+            try:
+                re.search(pattern = regex, string = file).group()
+                condition_regex = 1
+            except:
+                pass
+
+        if condition_regex == 1:
+            continue
+
+        file.lower()
         file_path = os.path.join(root, file)
         logging.info(f" THE FILE NAMED '{file}' CONTAINS THE FOLLOWING INFORMATION (IT IS BELOW) ")
         # Print the content of each file
@@ -36,7 +47,20 @@ def printing_files(root, files, ignore_files):
 
 def print_directory_structure_and_file_contents(directory, ignore_files=[], ignore_directories=[]):
     for root, dirs, files in os.walk(directory):
+        cdirs = root.split('/')
         if any(word in root for word in ignore_directories):
+            continue
+        condition_regex = 0
+        for regex in DIRECTORIES_TO_IGNORE_BASED_ON_REGEX:
+            for cdir in cdirs:
+                try:
+                    re.search(pattern = regex, string = cdir).group()
+                    condition_regex = 1
+                    break
+                except:
+                    pass
+
+        if condition_regex == 1:
             continue
         # Print the files in the current directory
         printing_files(root, files, ignore_files)

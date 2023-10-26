@@ -1,16 +1,25 @@
 FILES_TO_IGNORE = [
-'.gitignore',
-'.dockerignore',
 'drive_credentials.json',
-'Untitules.ipynb',
 'chromedriver',
 'logfile.txt',
-'Untitled.ipynb'
 ]
 
+FILES_TO_IGNORE_BASED_ON_REGEX = [
+'^\.',
+'.*\.ipynb',
+'\.png',
+'.*\.pt',
+'.*\.th',
+'.*\.ttf'
+
+]
+
+
 DIRECTORIES_TO_IGNORE = [
-'.git',
 '__pycache__',
-'.ipynb_checkpoints',
 'venv'
+]
+
+DIRECTORIES_TO_IGNORE_BASED_ON_REGEX = [
+'^\.'
 ]
