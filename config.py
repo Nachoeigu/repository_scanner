@@ -10,8 +10,9 @@ FILES_TO_IGNORE_BASED_ON_REGEX = [
 '\.png',
 '.*\.pt',
 '.*\.th',
-'.*\.ttf'
-
+'.*\.ttf',
+'\.jpg',
+'\.gif'
 ]
 
 
