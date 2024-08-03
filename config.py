@@ -6,13 +6,30 @@ FILES_TO_IGNORE = [
 
 FILES_TO_IGNORE_BASED_ON_REGEX = [
 '^\.',
-'.*\.ipynb',
-'\.png',
-'.*\.pt',
-'.*\.th',
-'.*\.ttf',
-'\.jpg',
-'\.gif'
+'.*\.ipynb$',
+'\.png$',
+'.*\.pt$',
+'.*\.th$',
+'.*\.ttf$',
+'\.jpg$',
+'\.gif$',
+'\.pdf$',
+'\.faiss$',
+'\.epub$',
+'\.vsdx$',
+'\.pptx$',
+'\.msg$',
+'\.jpeg$',
+'\.odt$',
+'\.ico$',
+'\.webp$',
+'\.csv$',
+'\.docx$',
+'\.xlsx$',
+'\.zip$',
+'\.db$',
+'\.pkl$',
+'\.mp4$'
 ]
 
 

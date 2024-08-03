@@ -55,10 +55,10 @@ class PrompterEngineer:
         print('--')
 
 
+if __name__ == '__main__':
+    with open('logfile.txt','r') as file:
+        file_content = file.read()
 
-with open('logfile.txt','r') as file:
-    file_content = file.read()
-
-PrompterEngineer().etl_entire_text(file_content)
+    PrompterEngineer().etl_entire_text(file_content)
 
  

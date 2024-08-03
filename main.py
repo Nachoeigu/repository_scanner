@@ -39,11 +39,18 @@ def printing_files(root, files, ignore_files):
         file_path = os.path.join(root, file)
         logging.info(f" THE FILE NAMED '{file}' CONTAINS THE FOLLOWING INFORMATION (IT IS BELOW) ")
         # Print the content of each file
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            logging.info('```')
-            logging.info(content)
-            logging.info('```')
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                logging.info('```')
+                logging.info(content)
+                logging.info('```')
+        except Exception as e:
+            decision = int(input(f"We have an error while reading file: {file}.\n What to do?\n1) Jump it.\n2) Broke program.\nYour answer: "))
+            if decision == 1:
+                continue
+            else:
+                raise Exception(e)
 
 def print_directory_structure_and_file_contents(directory, ignore_files=[], ignore_directories=[]):
     for root, dirs, files in os.walk(directory):
@@ -92,3 +99,5 @@ if __name__ == "__main__":
     print_directory_structure_and_file_contents(target_directory, 
                                                 ignore_files = FILES_TO_IGNORE,
                                                 ignore_directories= DIRECTORIES_TO_IGNORE)
+
+
