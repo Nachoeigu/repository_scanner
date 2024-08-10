@@ -29,7 +29,13 @@ FILES_TO_IGNORE_BASED_ON_REGEX = [
 '\.zip$',
 '\.db$',
 '\.pkl$',
-'\.mp4$'
+'\.mp4$',
+'\.woff2$',
+'\.webm$',
+'\.lockb$',
+'\.woff$',
+'\.eot$',
+'\.otf$'
 ]
 
 

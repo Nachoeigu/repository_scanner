@@ -37,14 +37,14 @@ def printing_files(root, files, ignore_files):
 
         file.lower()
         file_path = os.path.join(root, file)
-        logging.info(f" THE FILE NAMED '{file}' CONTAINS THE FOLLOWING INFORMATION (IT IS BELOW) ")
-        # Print the content of each file
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                logging.info('```')
-                logging.info(content)
-                logging.info('```')
+
+            logging.info(f" THE FILE NAMED '{file}' CONTAINS THE FOLLOWING INFORMATION (IT IS BELOW) ")
+            logging.info('```')
+            logging.info(content)
+            logging.info('```')
         except Exception as e:
             decision = int(input(f"We have an error while reading file: {file}.\n What to do?\n1) Jump it.\n2) Broke program.\nYour answer: "))
             if decision == 1:
@@ -90,14 +90,10 @@ def print_directory_structure(directory, indent="", printed_dirs = set(), first_
 if __name__ == "__main__":
     target_directory = input('Put your entire path:')
     logging.info("THIS IS THE STRUCTURE OF THE ENTIRE PROJECT:")    
-    print_directory_structure(target_directory, first_approach=True)
-    logging.info("Did you understand perfectly the structure of the project I provided to you above?")    
-    
-    logging.info('---SPLIT_LINE_THAT_WE_USE_LETTER_FOR_ETL_PROCCESS----')
+    print_directory_structure(target_directory, first_approach=True)    
 
     logging.info("IN THE FOLLOWING MESSAGES, I WILL SHARE WITH YOU THE CONTENT OF EACH FILE:")
     print_directory_structure_and_file_contents(target_directory, 
                                                 ignore_files = FILES_TO_IGNORE,
                                                 ignore_directories= DIRECTORIES_TO_IGNORE)
-
 
