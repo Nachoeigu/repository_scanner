@@ -1,120 +1,120 @@
 FILES_TO_IGNORE = [
-'drive_credentials.json',
-'chromedriver',
-'logfile.txt'
+r'drive_credentials.json',
+r'chromedriver',
+r'logfile.txt'
 ]
 
 FILES_TO_IGNORE_BASED_ON_REGEX = [
 # Hidden files (usually configuration files or metadata)
-'^\.',
+r'^\.',
 
 # Jupyter Notebook files (often contain outputs and are not purely code)
-'.*\.ipynb$',
+r'.*\.ipynb$',
 
 # Image files (binary data, not relevant to text/code extraction)
-'\.png$',      # PNG images
-'\.jpg$',      # JPG images
-'\.jpeg$',     # JPEG images
-'\.gif$',      # GIF images
-'\.webp$',     # WebP images
-'\.ico$',      # Icon files
-'\.svg$',      # Scalable Vector Graphics
+r'\.png$',      # PNG images
+r'\.jpg$',      # JPG images
+r'\.jpeg$',     # JPEG images
+r'\.gif$',      # GIF images
+r'\.webp$',     # WebP images
+r'\.ico$',      # Icon files
+r'\.svg$',      # Scalable Vector Graphics
 
 # Video files (binary data, not relevant to text/code extraction)
-'\.mp4$',      # MP4 videos
-'\.webm$',     # WebM videos
+r'\.mp4$',      # MP4 videos
+r'\.webm$',     # WebM videos
 
 # Audio files (binary data, not relevant to text/code extraction)
-'\.mp3$',      # MP3 audio files
-'\.wav$',      # WAV audio files
+r'\.mp3$',      # MP3 audio files
+r'\.wav$',      # WAV audio files
 
 # Font files (binary data, not relevant to text/code extraction)
-'.*\.ttf$',    # TrueType Font files
-'\.woff2$',    # Web Open Font Format 2
-'\.woff$',     # Web Open Font Format
-'\.eot$',      # Embedded OpenType fonts
-'\.otf$',      # OpenType fonts
+r'.*\.ttf$',    # TrueType Font files
+r'\.woff2$',    # Web Open Font Format 2
+r'\.woff$',     # Web Open Font Format
+r'\.eot$',      # Embedded OpenType fonts
+r'\.otf$',      # OpenType fonts
 
 # Document files (non-code content, usually not relevant to source code analysis)
-'\.pdf$',      # PDF documents
-'\.epub$',     # EPUB book files
-'\.vsdx$',     # Visio documents
-'\.pptx$',     # PowerPoint presentations
-'\.msg$',      # Outlook messages
-'\.odt$',      # OpenDocument text files
-'\.docx$',     # Word documents
-'\.xlsx$',     # Excel spreadsheets
+r'\.pdf$',      # PDF documents
+r'\.epub$',     # EPUB book files
+r'\.vsdx$',     # Visio documents
+r'\.pptx$',     # PowerPoint presentations
+r'\.msg$',      # Outlook messages
+r'\.odt$',      # OpenDocument text files
+r'\.docx$',     # Word documents
+r'\.xlsx$',     # Excel spreadsheets
 
 # Compressed and archive files (not directly readable text)
-'\.zip$',      # ZIP archives
-'\.tar$',      # TAR archives
-'\.gz$',       # Gzip compressed files
-'\.rar$',      # RAR archives
-'\.7z$',       # 7-Zip archives
+r'\.zip$',      # ZIP archives
+r'\.tar$',      # TAR archives
+r'\.gz$',       # Gzip compressed files
+r'\.rar$',      # RAR archives
+r'\.7z$',       # 7-Zip archives
 
 # Model and binary data files (binary data, often large, not relevant to text extraction)
-'.*\.pt$',     # PyTorch model files
-'.*\.th$',     # Torch model files
-'\.pkl$',      # Pickle files
-'\.bin$',      # Binary files (generic)
-'\.exe$',      # Executable files
-'\.dll$',      # Dynamic Link Libraries
-'\.so$',       # Shared libraries (Unix)
-'\.faiss$',    # FAISS index files
+r'.*\.pt$',     # PyTorch model files
+r'.*\.th$',     # Torch model files
+r'\.pkl$',      # Pickle files
+r'\.bin$',      # Binary files (generic)
+r'\.exe$',      # Executable files
+r'\.dll$',      # Dynamic Link Libraries
+r'\.so$',       # Shared libraries (Unix)
+r'\.faiss$',    # FAISS index files
 
 # Data files (potentially large data sets, often not directly useful for source code analysis)
-'\.csv$',      # CSV files
-'\.db$',       # Database files (generic)
+r'\.csv$',      # CSV files
+r'\.db$',       # Database files (generic)
 
 # Video and image formats for deep learning (not useful for text extraction)
-'\.lockb$',    # Lock files (specific formats)
+r'\.lockb$',    # Lock files (specific formats)
 
 # Log and temporary files (not useful for code analysis, often large or irrelevant)
-'\.log$',      # Log files
-'\.tmp$',      # Temporary files
-'\.bak$',      # Backup files
-'\.swp$',      # Swap files (typically Vim)
+r'\.log$',      # Log files
+r'\.tmp$',      # Temporary files
+r'\.bak$',      # Backup files
+r'\.swp$',      # Swap files (typically Vim)
 
 # System and environment-related directories/files (not useful for source code analysis)
-'__pycache__', # Python cache directories
-'venv/',       # Virtual environment directories
-'node_modules/',# Node.js modules directories
+r'__pycache__', # Python cache directories
+r'venv/',       # Virtual environment directories
+r'node_modules/',# Node.js modules directories
 
 
 # Design files (binary files, not relevant for text extraction)
-'\.psd$',      # Photoshop files
-'\.ai$',       # Adobe Illustrator files
-'\.sketch$',   # Sketch design files
+r'\.psd$',      # Photoshop files
+r'\.ai$',       # Adobe Illustrator files
+r'\.sketch$',   # Sketch design files
 
 # Backup and distribution files (not relevant for source code analysis)
-'\.dist$',     # Distribution directories
-'\.bak$',      # Backup files (repeated for emphasis)
+r'\.dist$',     # Distribution directories
+r'\.bak$',      # Backup files (repeated for emphasis)
 
 # Additional unnecessary binary data (unlikely to contain useful source code)
-'\.dmg$',      # macOS Disk Image files
-'\.iso$',      # ISO disk image files
-'\.jar$',      # Java Archive files (often contain compiled code)
-'\.class$',    # Java class files (compiled code)
-'\.obj$',      # Object files (compiled code)
-'\.o$',        # Object files (compiled code)
-'\.out$',      # Output files (compiled binaries)
-'\.a$',        # Static libraries (Unix)
-'\.lib$',      # Static libraries (Windows)
-'\.pdb$',      # Program database files (debugging information)
-'\.app$',      # macOS Application bundles
-'\.apk$'       # Android operation system app
-'\.aapt$'
-'\.caffemodel'
+r'\.dmg$',      # macOS Disk Image files
+r'\.iso$',      # ISO disk image files
+r'\.jar$',      # Java Archive files (often contain compiled code)
+r'\.class$',    # Java class files (compiled code)
+r'\.obj$',      # Object files (compiled code)
+r'\.o$',        # Object files (compiled code)
+r'\.out$',      # Output files (compiled binaries)
+r'\.a$',        # Static libraries (Unix)
+r'\.lib$',      # Static libraries (Windows)
+r'\.pdb$',      # Program database files (debugging information)
+r'\.app$',      # macOS Application bundles
+r'\.apk$'       # Android operation system app
+r'\.aapt$'
+r'\.caffemodel'
 
 
 ]
 
 
 DIRECTORIES_TO_IGNORE = [
-'__pycache__',
-'venv'
+r'__pycache__',
+r'venv'
 ]
 
 DIRECTORIES_TO_IGNORE_BASED_ON_REGEX = [
-'^\.'
+r'^\.'
 ]
