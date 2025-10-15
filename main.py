@@ -50,4 +50,4 @@ if __name__ == "__main__":
     # --- FIN DEL DOCUMENTO XML ---
     logging.info('</repositoryAnalysis>')
 
-    #/Users/nachoeigu/Desktop/Personal/psicologia
+    #/Users/nachoeigu/Desktop/Personal/grupocerca_website

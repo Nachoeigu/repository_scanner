@@ -1,7 +1,9 @@
 FILES_TO_IGNORE = [
 r'drive_credentials.json',
 r'chromedriver',
-r'logfile.txt'
+r'logfile.txt',
+r'package-lock.json',
+r'package.json'
 ]
 
 FILES_TO_IGNORE_BASED_ON_REGEX = [
@@ -112,7 +114,10 @@ r'\.caffemodel'
 
 DIRECTORIES_TO_IGNORE = [
 r'__pycache__',
-r'venv'
+r'venv',
+r'node_modules',
+r"_site",
+r".cache"
 ]
 
 DIRECTORIES_TO_IGNORE_BASED_ON_REGEX = [
