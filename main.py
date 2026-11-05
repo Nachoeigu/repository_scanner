@@ -1,100 +1,117 @@
 # main.py
+"""Repository Scanner: CLI para volcar un repo a texto listo para un LLM.
 
-import os
+Uso:
+    python main.py [path] [flags]
+
+Sin path, mantiene el prompt interactivo de siempre.
+Salidas en output/<repo_name>/: 1_overview.txt, 2_full.txt, manifest.json.
+"""
+
+from __future__ import annotations
+
+import argparse
 import sys
-import logging
-from config import FILES_TO_IGNORE, DIRECTORIES_TO_IGNORE
-from functions import (
-    MessageOnlyFormatter,
-    print_directory_structure_xml,
-    print_main_readme_xml,
-    print_file_contents_xml,
-    generate_yaml_catalog
-)
+from pathlib import Path
 
-def create_file_logger(logger_name: str, output_file: str) -> logging.Logger:
-    """Crea un logger independiente que escribe directamente en un archivo de destino."""
-    logger = logging.getLogger(logger_name)
-    logger.setLevel(logging.INFO)
-    logger.handlers = []
+from config import MAX_FILE_KB, README_MAX_CHARS, TOKEN_WARN_THRESHOLD
+from render import format_tokens, render_full, render_manifest, render_overview
+from scanner import clean_input_path, scan_repository
+from tokens import estimate_tokens
 
-    handler = logging.FileHandler(output_file, mode='w', encoding='utf-8')
-    handler.setFormatter(MessageOnlyFormatter())
-    logger.addHandler(handler)
-    return logger
 
-def build_overview_xml(target_directory: str, output_file: str):
-    """Genera 1_overview.xml: solo árbol con pesos/líneas y README principal."""
-    logger = create_file_logger("overview", output_file)
-    project_name = os.path.basename(target_directory)
+def build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description='Escanea un repo y genera overview + volcado completo para un LLM.'
+    )
+    parser.add_argument('path', nargs='?', help='ruta del repo a escanear (si falta, prompt interactivo)')
+    parser.add_argument('--out', metavar='DIR', help=f'raíz de salidas (default: <script>/output)')
+    parser.add_argument('--max-file-kb', type=int, default=MAX_FILE_KB,
+                        help=f'tamaño máximo por archivo en KB (default: {MAX_FILE_KB})')
+    parser.add_argument('--outline', action='store_true',
+                        help='agregar mapa de símbolos por archivo al overview')
+    parser.add_argument('--readme-max-chars', type=int, default=README_MAX_CHARS,
+                        help=f'recorte del README en el overview (default: {README_MAX_CHARS})')
+    parser.add_argument('--line-numbers', action='store_true',
+                        help='numerar las líneas en 2_full.txt')
+    parser.add_argument('--no-gitignore', action='store_true',
+                        help='ignorar .gitignore y usar os.walk (los filtros de config.py aplican igual)')
+    return parser
 
-    logger.info('<?xml version="1.0" encoding="UTF-8"?>')
-    logger.info(f'<repositoryAnalysis name="{project_name}" mode="overview">')
-    
-    logger.info('  <structure>')
-    print_directory_structure_xml(target_directory, logger, indent_level=2)
-    logger.info('  </structure>')
 
-    print_main_readme_xml(target_directory, logger)
+def main(argv: list[str] | None = None) -> int:
+    args = build_arg_parser().parse_args(argv)
 
-    logger.info('</repositoryAnalysis>')
-    
-    for h in logger.handlers:
-        h.close()
+    if args.path:
+        raw = args.path
+    else:
+        raw = input('Put your entire path: ')
+    repo = clean_input_path(raw).resolve()
 
-def build_full_xml(target_directory: str, output_file: str):
-    """Genera 2_full.xml: estructura, README y el volcado completo de código."""
-    logger = create_file_logger("full", output_file)
-    project_name = os.path.basename(target_directory)
+    if not repo.is_dir():
+        print(f"\n[ERROR] La ruta '{repo}' no es un directorio válido.")
+        return 1
 
-    logger.info('<?xml version="1.0" encoding="UTF-8"?>')
-    logger.info(f'<repositoryAnalysis name="{project_name}" mode="full">')
-    
-    logger.info('  <structure>')
-    print_directory_structure_xml(target_directory, logger, indent_level=2)
-    logger.info('  </structure>')
+    script_dir = Path(__file__).resolve().parent
+    output_root = Path(args.out).expanduser().resolve() if args.out else script_dir / 'output'
 
-    print_main_readme_xml(target_directory, logger)
+    print(f'\n🔍 Escaneando repositorio: {repo}')
+    scan = scan_repository(
+        repo, output_root,
+        use_gitignore=not args.no_gitignore,
+        max_file_kb=args.max_file_kb,
+    )
 
-    logger.info('  <files>')
-    print_file_contents_xml(target_directory, logger, FILES_TO_IGNORE)
-    logger.info('  </files>')
+    overview_text = render_overview(scan, readme_max_chars=args.readme_max_chars, outline=args.outline)
+    full_text = render_full(scan.files, line_numbers=args.line_numbers)
+    manifest_text = render_manifest(scan)
 
-    logger.info('</repositoryAnalysis>')
+    repo_out = output_root / scan.repo_name
+    repo_out.mkdir(parents=True, exist_ok=True)
+    overview_path = repo_out / '1_overview.txt'
+    full_path = repo_out / '2_full.txt'
+    manifest_path = repo_out / 'manifest.json'
+    overview_path.write_text(overview_text, encoding='utf-8')
+    full_path.write_text(full_text, encoding='utf-8')
+    manifest_path.write_text(manifest_text, encoding='utf-8')
 
-    for h in logger.handlers:
-        h.close()
+    # --- Resumen de consola (sin volcar contenido) ---
+    included = scan.included
+    full_tokens = sum(f.tokens for f in included)
+    overview_tokens = estimate_tokens(overview_text)
 
-if __name__ == "__main__":
-    raw_path = input('Put your entire path: ').strip().strip("\"'")
-    target_directory = os.path.abspath(os.path.expanduser(raw_path))
+    print('\n✅ Escaneo terminado.')
+    print(f'  Archivos incluidos: {len(included)}')
+    if scan.skipped_too_large:
+        print(f'  Omitidos por tamaño: {len(scan.skipped_too_large)} '
+              f'({", ".join(f.rel_path for f in scan.skipped_too_large[:5])})')
+    if scan.skipped_unreadable:
+        print(f'  Ilegibles: {len(scan.skipped_unreadable)} '
+              f'({", ".join(f.rel_path for f in scan.skipped_unreadable[:5])})')
+    if scan.binaries_skipped:
+        print(f'  Binarios omitidos: {scan.binaries_skipped}')
+    if scan.secrets_skipped:
+        # Se listan a propósito: ayuda a detectar falsos positivos del glob.
+        print(f'  🔒 Secretos omitidos ({len(scan.secrets_skipped)}): '
+              + ', '.join(scan.secrets_skipped[:10]))
 
-    if not os.path.isdir(target_directory):
-        print(f"\n[ERROR] La ruta '{target_directory}' no es un directorio válido.")
-        sys.exit(1)
+    print(f'\n  Tokens estimados del volcado completo: {format_tokens(full_tokens)}')
+    if full_tokens > TOKEN_WARN_THRESHOLD:
+        print(f'  ⚠️  Supera el umbral de {TOKEN_WARN_THRESHOLD:,} tokens: '
+              f'pegá solo el overview y usá extract para el resto.')
+    if full_tokens > 0:
+        saving = 100 * (1 - overview_tokens / full_tokens)
+        print(f'  Ahorro del overview vs volcado completo: {saving:.0f}%')
 
-    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output')
-    os.makedirs(output_dir, exist_ok=True)
+    print(f'\n  Salidas en {repo_out}/:')
+    print(f'  ├── 1_overview.txt   → pegá este en el turno 1 ({format_tokens(overview_tokens)})')
+    print(f'  ├── 2_full.txt       → volcado completo ({format_tokens(full_tokens)})')
+    print(f'  └── manifest.json    → índice que usa extract')
 
-    overview_path = os.path.join(output_dir, '1_overview.xml')
-    full_path     = os.path.join(output_dir, '2_full.xml')
-    yaml_path     = os.path.join(output_dir, '3_files.yaml')
+    print(f'\n  Próximo paso: cuando el LLM te pida archivos, pasáselos a extract:')
+    print(f'    python extract.py --repo {repo} src/app.py README.md')
+    return 0
 
-    print(f"\n🔍 Escaneando repositorio: {target_directory}")
-    
-    print("  [1/3] Generando 1_overview.xml (estructura liviana + README)...")
-    build_overview_xml(target_directory, overview_path)
 
-    print("  [2/3] Generando 2_full.xml (repositorio completo en XML)...")
-    build_full_xml(target_directory, full_path)
-
-    print("  [3/3] Generando 3_files.yaml (catálogo ordenado por archivos)...")
-    generate_yaml_catalog(target_directory, yaml_path, FILES_TO_IGNORE)
-
-    print("\n✅ ¡Escaneo finalizado con éxito!")
-    print(f"📁 Archivos generados en: {output_dir}/")
-    print(f"  ├── 1_overview.xml  --> Pegás este en el Turno 1 (~95% ahorro de tokens)")
-    print(f"  ├── 2_full.xml      --> Volcado completo XML (de respaldo)")
-    print(f"  └── 3_files.yaml    --> Buscás con Ctrl+F y copiás los archivos que te pida")
-    
-    #/Users/nachoeigu/Desktop/Personal/sandbox-ai-app
+if __name__ == '__main__':
+    sys.exit(main())
