@@ -1,125 +1,119 @@
+# config.py
+
 FILES_TO_IGNORE = [
-r'drive_credentials.json',
-r'chromedriver',
-r'logfile.txt',
-r'package-lock.json',
-r'package.json'
+    'drive_credentials.json',
+    'chromedriver',
+    'logfile.txt',
+    'package-lock.json',
+    # Nota: se removió package.json y managed-settings.json para permitir auditar dependencias y políticas
 ]
 
 FILES_TO_IGNORE_BASED_ON_REGEX = [
-# Hidden files (usually configuration files or metadata)
-r'^\.',
+    # Archivos ocultos (metadata o configs de usuario local)
+    r'^\.',
+    # Jupyter Notebooks con outputs pesados
+    r'.*\.ipynb$',
 
-# Jupyter Notebook files (often contain outputs and are not purely code)
-r'.*\.ipynb$',
+    # Imágenes
+    r'\.png$',
+    r'\.jpg$',
+    r'\.jpeg$',
+    r'\.gif$',
+    r'\.webp$',
+    r'\.ico$',
+    r'\.svg$',
+    r'\.mov$',     # Corregido de \nmov$
+    r'\.heic$',    # Corregido de \nheic$
 
-# Image files (binary data, not relevant to text/code extraction)
-r'\.png$',      # PNG images
-r'\.jpg$',      # JPG images
-r'\.jpeg$',     # JPEG images
-r'\.gif$',      # GIF images
-r'\.webp$',     # WebP images
-r'\.ico$',      # Icon files
-r'\.svg$',      # Scalable Vector Graphics
+    # Videos
+    r'\.mp4$',
+    r'\.webm$',
 
-# Video files (binary data, not relevant to text/code extraction)
-r'\.mp4$',      # MP4 videos
-r'\.webm$',     # WebM videos
+    # Audio
+    r'\.mp3$',
+    r'\.wav$',
 
-# Audio files (binary data, not relevant to text/code extraction)
-r'\.mp3$',      # MP3 audio files
-r'\.wav$',      # WAV audio files
+    # Tipografías
+    r'.*\.ttf$',
+    r'\.woff2$',
+    r'\.woff$',
+    r'\.eot$',
+    r'\.otf$',
 
-# Font files (binary data, not relevant to text/code extraction)
-r'.*\.ttf$',    # TrueType Font files
-r'\.woff2$',    # Web Open Font Format 2
-r'\.woff$',     # Web Open Font Format
-r'\.eot$',      # Embedded OpenType fonts
-r'\.otf$',      # OpenType fonts
+    # Documentos y formatos ofimáticos
+    r'\.pdf$',
+    r'\.epub$',
+    r'\.vsdx$',
+    r'\.pptx$',
+    r'\.msg$',
+    r'\.odt$',
+    r'\.docx$',
+    r'\.xlsx$',
 
-# Document files (non-code content, usually not relevant to source code analysis)
-r'\.pdf$',      # PDF documents
-r'\.epub$',     # EPUB book files
-r'\.vsdx$',     # Visio documents
-r'\.pptx$',     # PowerPoint presentations
-r'\.msg$',      # Outlook messages
-r'\.odt$',      # OpenDocument text files
-r'\.docx$',     # Word documents
-r'\.xlsx$',     # Excel spreadsheets
+    # Comprimidos y binarios empaquetados
+    r'\.zip$',
+    r'\.tar$',
+    r'\.gz$',
+    r'\.rar$',
+    r'\.7z$',
 
-# Compressed and archive files (not directly readable text)
-r'\.zip$',      # ZIP archives
-r'\.tar$',      # TAR archives
-r'\.gz$',       # Gzip compressed files
-r'\.rar$',      # RAR archives
-r'\.7z$',       # 7-Zip archives
+    # Pesos de modelos y checkpoints
+    r'.*\.pt$',
+    r'.*\.th$',
+    r'\.pkl$',
+    r'\.bin$',
+    r'\.faiss$',
+    r'\.caffemodel$',
 
-# Model and binary data files (binary data, often large, not relevant to text extraction)
-r'.*\.pt$',     # PyTorch model files
-r'.*\.th$',     # Torch model files
-r'\.pkl$',      # Pickle files
-r'\.bin$',      # Binary files (generic)
-r'\.exe$',      # Executable files
-r'\.dll$',      # Dynamic Link Libraries
-r'\.so$',       # Shared libraries (Unix)
-r'\.faiss$',    # FAISS index files
+    # Binarios ejecutables y bibliotecas compiladas
+    r'\.exe$',
+    r'\.dll$',
+    r'\.so$',
+    r'\.dylib$',
+    r'\.a$',
+    r'\.lib$',
+    r'\.o$',
+    r'\.obj$',
+    r'\.out$',
 
-# Data files (potentially large data sets, often not directly useful for source code analysis)
-r'\.csv$',      # CSV files
-r'\.db$',       # Database files (generic)
+    # Datos y bases locales
+    r'\.csv$',
+    r'\.db$',
+    r'\.lockb$',
 
-# Video and image formats for deep learning (not useful for text extraction)
-r'\.lockb$',    # Lock files (specific formats)
+    # Logs y temporales
+    r'\.log$',
+    r'\.tmp$',
+    r'\.bak$',
+    r'\.swp$',
 
-# Log and temporary files (not useful for code analysis, often large or irrelevant)
-r'\.log$',      # Log files
-r'\.tmp$',      # Temporary files
-r'\.bak$',      # Backup files
-r'\.swp$',      # Swap files (typically Vim)
-
-# System and environment-related directories/files (not useful for source code analysis)
-r'__pycache__', # Python cache directories
-r'venv/',       # Virtual environment directories
-r'node_modules/',# Node.js modules directories
-
-
-# Design files (binary files, not relevant for text extraction)
-r'\.psd$',      # Photoshop files
-r'\.ai$',       # Adobe Illustrator files
-r'\.sketch$',   # Sketch design files
-
-# Backup and distribution files (not relevant for source code analysis)
-r'\.dist$',     # Distribution directories
-r'\.bak$',      # Backup files (repeated for emphasis)
-
-# Additional unnecessary binary data (unlikely to contain useful source code)
-r'\.dmg$',      # macOS Disk Image files
-r'\.iso$',      # ISO disk image files
-r'\.jar$',      # Java Archive files (often contain compiled code)
-r'\.class$',    # Java class files (compiled code)
-r'\.obj$',      # Object files (compiled code)
-r'\.o$',        # Object files (compiled code)
-r'\.out$',      # Output files (compiled binaries)
-r'\.a$',        # Static libraries (Unix)
-r'\.lib$',      # Static libraries (Windows)
-r'\.pdb$',      # Program database files (debugging information)
-r'\.app$',      # macOS Application bundles
-r'\.apk$'       # Android operation system app
-r'\.aapt$'
-r'\.caffemodel'
-
-
+    # Diseños y paquetes de sistema
+    r'\.psd$',
+    r'\.ai$',
+    r'\.sketch$',
+    r'\.dmg$',
+    r'\.iso$',
+    r'\.jar$',
+    r'\.class$',
+    r'\.pdb$',
+    r'\.app$',
+    r'\.apk$',
+    r'\.aapt$',
+    r'\.plist$',
 ]
 
-
 DIRECTORIES_TO_IGNORE = [
-r'__pycache__',
-r'venv',
-r'node_modules',
-r"_site",
-r".cache"
+    '__pycache__',
+    'venv',
+    'node_modules',
+    '_site',
+    '.cache',
+    'dist',
+    'build',
+    'entrega_al_cliente',  # Corregido: sin comodines /** incompatibles
+    'imagenes_extraidas',
 ]
 
 DIRECTORIES_TO_IGNORE_BASED_ON_REGEX = [
-r'^\.'
+    r'^\.',
 ]
